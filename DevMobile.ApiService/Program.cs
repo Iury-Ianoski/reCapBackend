@@ -1,11 +1,16 @@
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
-builder.AddNpgsqlDataSource("postgres");
 
 // Add services to the container.
 builder.Services.AddProblemDetails();
+
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("postgres")));
 
 var app = builder.Build();
 

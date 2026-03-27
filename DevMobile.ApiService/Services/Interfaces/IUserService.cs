@@ -3,7 +3,7 @@ using DevMobile.ApiService.Entities;
 
 namespace DevMobile.ApiService.Services.Interfaces;
 
-public interface ITokenService
+public interface IUserService
 {
-    Task<string> GenerateToken(LoginDto loginDto);
+    Task Register(RegisterDto registerDto);
 }

@@ -3,8 +3,7 @@ using DevMobile.ApiService.Entities;
 
 namespace DevMobile.ApiService.Dbcontext;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
-{
+public class AppDbContext : DbContext {
     public DbSet<Book> Books { get; set; }
     public DbSet<Genre> Genres { get; set; }
     public DbSet<Review> Reviews { get; set; }

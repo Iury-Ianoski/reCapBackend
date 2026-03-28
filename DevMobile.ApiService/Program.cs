@@ -1,12 +1,13 @@
 using DevMobile.ApiService.Repositories;
 using DevMobile.ApiService.Repositories.Interfaces;
 using DevMobile.ApiService.Services.Interfaces;
-
 using DevMobile.ApiService.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using DevMobile.ApiService.Entities;
-using Microsoft.OpenApi;
+using DevMobile.ApiService.Dbcontext;
+using DevMobile.ApiService.Endpoints;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,3 +1,4 @@
+using DevMobile.ApiService.Dbcontext;
 using DevMobile.ApiService.Entities;
 using DevMobile.ApiService.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;

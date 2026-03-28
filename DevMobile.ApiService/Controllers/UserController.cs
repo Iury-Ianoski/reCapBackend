@@ -1,4 +1,5 @@
 using DevMobile.ApiService.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,14 +15,7 @@ namespace DevMobile.ApiService.Controllers
             _userService = userService;
         }
         
-        [HttpPost("register")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> Register(RegisterDto registerDto)
-        {
-            await _userService.Register(registerDto);
-            return Ok();
-        }
+        
 
     }
 }

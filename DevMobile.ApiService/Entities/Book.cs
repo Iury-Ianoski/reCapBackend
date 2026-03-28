@@ -11,5 +11,4 @@ public class Book
     public string Summary { get; set; }
     public virtual ICollection<Genre> Genres { get; set; }
     public virtual ICollection<Review> Reviews { get; set; }
-
 }

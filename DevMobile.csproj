@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Scalar.Aspire" Version="0.9.15" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.13.15" />
+  </ItemGroup>
+
 </Project>

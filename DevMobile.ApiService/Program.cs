@@ -8,6 +8,9 @@ using DevMobile.ApiService.Entities;
 using DevMobile.ApiService.Dbcontext;
 using DevMobile.ApiService.Endpoints;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 

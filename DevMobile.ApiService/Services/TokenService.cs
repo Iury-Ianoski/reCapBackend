@@ -37,14 +37,22 @@ public class TokenService : ITokenService
 
         var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.Name),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+        };
+
+        // adiciona todas as roles do usuário
+        foreach (var role in user.Roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role.Name));
+        }
+
         var tokenOptions = new JwtSecurityToken(
             issuer: issuer,
             audience: audience,
-            claims: new []
-            {
-                new Claim(type: ClaimTypes.Name, user.Name),
-                new Claim(type: ClaimTypes.Role, "Reader")
-            },
+            claims: claims,
             expires: DateTime.Now.AddMinutes(40),
             signingCredentials: signinCredentials
         );

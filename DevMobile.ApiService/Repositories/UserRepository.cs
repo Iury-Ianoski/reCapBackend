@@ -11,7 +11,7 @@ namespace DevMobile.ApiService.Repositories
     
         public async Task<User> GetByUserName(string userName)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == userName);
+            return await _context.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Email == userName);
         }
     }
         

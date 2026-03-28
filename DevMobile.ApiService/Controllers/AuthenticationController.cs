@@ -18,25 +18,36 @@ namespace DevMobile.ApiService.Controllers
 
         }
         
+        // POST /auth/login
+        /// <summary>
+        /// Realize login utilizando as credenciais de acesso de um usuário existente
+        /// </summary>
+        /// <returns>Token necessário para acessar demais APIs</returns>
         [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult> Login(LoginDto loginDto)
         {
             var token = await _tokenService.GenerateToken(loginDto);
 
-            if (token == String.Empty) return Unauthorized();
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized(new { message = "Credenciais inválidas" });
 
-            return Ok(token);
+            return Ok(new {BearerToken = token});
         }
 
+        // POST /auth/register
+        /// <summary>
+        /// Registre-se. Adiciona novo usuário à base de dados.
+        /// </summary>
+        /// <returns>Mensagem de sucesso</returns>
         [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> Register(RegisterDto registerDto)
         {
             await _userService.Register(registerDto);
-            return Ok();
+            return Created("", new { message = "Usuário criado com sucesso" });
         }
 
     }

@@ -23,7 +23,7 @@ public class UserService : IUserService
 
     public async Task Register(RegisterDto registerDto)
     {
-        var alreadyExists = _userRepository.GetByUserName(registerDto.Email);
+        var alreadyExists = await _userRepository.GetByUserName(registerDto.Email);
         if (alreadyExists != null)
             return;
 

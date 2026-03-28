@@ -23,7 +23,7 @@ public class TokenService : ITokenService
 
     public async Task<string> GenerateToken(LoginDto loginDto)
     {
-        var user = await _userRepository.GetByUserName(loginDto.UserName);
+        var user = await _userRepository.GetByUserName(loginDto.Email);
         
         if(user == null) return String.Empty;
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using DevMobile.ApiService.Entities;
 using DevMobile.ApiService.Dbcontext;
-using DevMobile.ApiService.Endpoints;
+// using DevMobile.ApiService.Endpoints;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -27,10 +27,16 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
+builder.Services.AddScoped<IBookService, BookService>();
+
 builder.Services.AddScoped<PasswordHasher<User>>();
+
+var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -39,8 +45,8 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new()
     {
         Version = "v1",
-        Title = "reCap.Api",
-        Description = "API do aplicativo reCap"
+        Title = "reCap API",
+        Description = "API para gerenciamento de livros e autenticação de usuários. Desenvolvido por: Iury Ribeiro Ianoksi e Moisés Matheus B. Gonçalves",
     });
 
     options.AddSecurityDefinition("Bearer", new()
@@ -50,7 +56,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Description = "Digite: Bearer {seu token}"
+        Description = "Informe seu token"
     });
 
     options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
@@ -67,6 +73,9 @@ builder.Services.AddSwaggerGen(options =>
             new List<string>()
         }
     });
+
+    options.IncludeXmlComments(xmlPath);
+
     });
 
 builder.Services.AddAuthentication(x =>
@@ -94,12 +103,6 @@ var app = builder.Build();
 // Pipeline
 app.UseExceptionHandler();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
@@ -109,7 +112,7 @@ app.MapControllers();
 
 app.MapDefaultEndpoints();
 
-app.MapBooksEndpoints();
+//app.MapBooksEndpoints();
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>

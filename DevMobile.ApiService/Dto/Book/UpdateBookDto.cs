@@ -1,7 +1,6 @@
 namespace DevMobile.ApiService.Dto.Book;
 
-public record UpdateBookDto( //realmente necessário????
-    int Id,
+public record UpdateBookDto(
     string Title,
     string Author,
     int PublicationYear,

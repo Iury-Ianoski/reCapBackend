@@ -24,13 +24,5 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Dto\" />
-    <Folder Include="Dto\Repositories\" />
-    <Folder Include="Endpoints\" />
-    <Folder Include="Dto\Book\" />
-    <Folder Include="Dto\Review\" />
-    <Folder Include="Endpoints\" />
-  </ItemGroup>
 
 </Project>

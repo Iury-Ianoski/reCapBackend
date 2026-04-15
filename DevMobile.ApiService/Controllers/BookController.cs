@@ -1,4 +1,5 @@
 using DevMobile.ApiService.Dto.Book;
+using DevMobile.ApiService.Dto.Genre;
 using DevMobile.ApiService.Entities;
 using DevMobile.ApiService.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -99,6 +100,29 @@ namespace DevMobile.ApiService.Controllers
         {
             var deleted = await _bookService.Delete(id);
             if (deleted == false)
+                return NotFound();
+
+            return NoContent();
+        }
+
+        // POST /books/{bookId}/genres
+        /// <summary>
+        /// Adiciona um ou mais gêneros a um livro existente (Somente moderadores)
+        /// </summary>
+        /// <param name="bookId">ID do livro</param>
+        /// <param name="dto">Lista de IDs de gêneros a serem associados ao livro</param>
+        /// <returns>Sem conteúdo em caso de sucesso</returns>
+        [Authorize(Roles = "Moderator")]
+        [HttpPost("{bookId}/genres")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> AddGenres(int bookId, GenresListDto dto)
+        {
+            var result = await _bookService.AddGenres(bookId, dto.GenreIds);
+
+            if (!result)
                 return NotFound();
 
             return NoContent();

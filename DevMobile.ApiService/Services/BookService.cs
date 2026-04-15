@@ -9,10 +9,12 @@ namespace DevMobile.ApiService.Services;
 public class BookService : IBookService
 {
     private readonly IBookRepository _bookRepository;
+    private readonly IGenreRepository _genreRepository;
 
-    public BookService(IBookRepository bookRepository)
+    public BookService(IBookRepository bookRepository, IGenreRepository genreRepository)
     {
         _bookRepository = bookRepository;
+        _genreRepository = genreRepository;
     }
 
     public async Task<IEnumerable<BookDto>> GetAll()
@@ -98,6 +100,28 @@ public class BookService : IBookService
             return false;
 
         _bookRepository.Delete(entity);
+
+        return true;
+    }
+
+    public async Task<bool> AddGenres(int bookId, List<int> genreIds)
+    {
+        var book = await _bookRepository.GetWithIncludes(bookId, b => b.Genres);
+
+        if (book == null)
+            return false;
+
+        var genres = await _genreRepository.GetByIds(genreIds);
+
+        foreach (var genre in genres)
+        {
+            if (!book.Genres.Any(g => g.Id == genre.Id))
+            {
+                book.Genres.Add(genre);
+            }
+        }
+
+        _bookRepository.Update(book);
 
         return true;
     }

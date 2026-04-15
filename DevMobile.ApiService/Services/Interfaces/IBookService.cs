@@ -11,4 +11,5 @@ public interface IBookService
     Task<BookDto> Create(CreateBookDto dto);
     Task<bool> Update(int id, UpdateBookDto dto);
     Task<bool> Delete(int id);
+    Task<bool> AddGenres(int bookId, List<int> genreIds);
 }

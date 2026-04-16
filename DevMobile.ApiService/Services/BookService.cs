@@ -2,6 +2,8 @@ using DevMobile.ApiService.Entities;
 using DevMobile.ApiService.Services.Interfaces;
 using DevMobile.ApiService.Repositories.Interfaces;
 using DevMobile.ApiService.Dto.Book;
+using DevMobile.ApiService.Dto.Genre;
+using DevMobile.ApiService.Dto.Review;
 
 
 namespace DevMobile.ApiService.Services;
@@ -19,32 +21,49 @@ public class BookService : IBookService
 
     public async Task<IEnumerable<BookDto>> GetAll()
     {
-        var books = await _bookRepository.GetAll();
+        var books = await _bookRepository.GetAllWithIncludes(b => b.Genres, b => b.Reviews);
 
         return books.Select(b => new BookDto(
-            b.Id, b.Title, b.Author,
+            b.Id,
+            b.Title,
+            b.Author,
             b.PublicationYear,
             b.CoverImageUrl,
             b.Chapters,
-            b.Summary
+            b.Summary,
+            b.Genres.Select(g => new GenreDto(g.Id, g.Name)).ToList()
         ));
     }
+    
 
-    public async Task<BookDto> GetById(int id)
+    public async Task<BookWithReviewsDto> GetById(int id)
     {
-        var entity = await _bookRepository.Get(id);
+        var entity = await _bookRepository.GetWithIncludes(id, b => b.Genres, b => b.Reviews);
 
         if (entity == null)
             return null;
 
-        return new BookDto(
+        var bookDto = new BookDto(
             entity.Id,
             entity.Title,
             entity.Author,
             entity.PublicationYear,
             entity.CoverImageUrl,
             entity.Chapters,
-            entity.Summary
+            entity.Summary,
+            entity.Genres.Select(g => new GenreDto(g.Id, g.Name)).ToList()
+        );
+
+        return new BookWithReviewsDto(
+            entity.Id,
+            entity.Title,
+            entity.Author,
+            entity.PublicationYear,
+            entity.CoverImageUrl,
+            entity.Chapters,
+            entity.Summary,
+            entity.Genres.Select(g => new GenreDto(g.Id, g.Name)).ToList(),
+            entity.Reviews.Select(g => new ReviewDto(g.Id, g.Content, g.InitialChapter, g.FinalChapter, g.Spoiler, g.Rating, bookDto)).ToList()
         );
     }
 
@@ -69,7 +88,8 @@ public class BookService : IBookService
             book.PublicationYear,
             book.CoverImageUrl,
             book.Chapters,
-            book.Summary
+            book.Summary,
+            new List<GenreDto>()
         );
     }
 
@@ -110,6 +130,8 @@ public class BookService : IBookService
 
         if (book == null)
             return false;
+        
+        book.Genres ??= new List<Genre>();
 
         var genres = await _genreRepository.GetByIds(genreIds);
 

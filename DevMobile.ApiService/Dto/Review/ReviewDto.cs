@@ -1,12 +1,14 @@
 using System;
+using DevMobile.ApiService.Dto.Book;
 
 namespace DevMobile.ApiService.Dto.Review;
 
 public record ReviewDto(
     int Id,
     string Content,
-    string Chapter,
+    int InitialChapter,
+    int? FinalChapter,
     bool Spoiler,
     int Rating,
-    string Book
+    BookDto Book
 );

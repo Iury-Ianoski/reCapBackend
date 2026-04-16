@@ -3,7 +3,7 @@ using DevMobile.ApiService.Dto.Review;
 
 namespace DevMobile.ApiService.Dto.Book;
 
-public record BookDto(
+public record BookWithReviewsDto(
     int Id,
     string Title,
     string Author,
@@ -11,5 +11,6 @@ public record BookDto(
     string CoverImageUrl,
     int Chapters,
     string Summary,
-    List<GenreDto> Genres
+    List<GenreDto> Genres,
+    List<ReviewDto> Reviews
 );

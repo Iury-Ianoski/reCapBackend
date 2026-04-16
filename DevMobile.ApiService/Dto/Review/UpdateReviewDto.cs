@@ -4,8 +4,9 @@ namespace DevMobile.ApiService.Dto.Review;
 
 public record UpdateReviewDto(
     string Content,
-    string Chapter,
+    int InitialChapter,
+    int? FinalChapter,
     bool Spoiler,
     int Rating,
-    string Book
+    int BookId
 );

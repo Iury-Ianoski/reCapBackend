@@ -9,7 +9,8 @@ public class ReviewConfiguration: IEntityTypeConfiguration<Review>
     public void Configure(EntityTypeBuilder<Review> builder)
     {
         builder.Property(r => r.Content).IsRequired();
-        builder.Property(r => r.Chapter).IsRequired();
+        builder.Property(r => r.InitialChapter).IsRequired();
+        builder.Property(r => r.FinalChapter);
         builder.Property(r => r.Spoiler).IsRequired();
         builder.Property(r => r.Rating).IsRequired();
         builder.Property(r => r.BookId).IsRequired();

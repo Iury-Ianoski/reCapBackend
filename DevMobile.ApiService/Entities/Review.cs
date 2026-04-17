@@ -6,7 +6,8 @@ public class Review
 {
     public int Id { get; set; }
     public string Content { get; set; }
-    public int Chapter { get; set; }
+    public int InitialChapter { get; set; }
+    public int? FinalChapter { get; set; }
     public bool Spoiler { get; set; }
     [Range(1, 5)]
     public int Rating { get; set; }

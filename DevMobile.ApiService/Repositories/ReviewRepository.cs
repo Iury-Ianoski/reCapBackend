@@ -15,6 +15,7 @@ namespace DevMobile.ApiService.Repositories
             return await _context.Reviews
                 .Include(r => r.Book)
                     .ThenInclude(b => b.Genres)
+                .Include(r => r.User)
                 .OrderByDescending(r => r.Id)
                 .Take(limit)
                 .ToListAsync();

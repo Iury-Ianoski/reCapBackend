@@ -63,7 +63,7 @@ public class BookService : IBookService
             entity.Chapters,
             entity.Summary,
             entity.Genres.Select(g => new GenreDto(g.Id, g.Name)).ToList(),
-            entity.Reviews.Select(g => new ReviewDto(g.Id, g.Content, g.InitialChapter, g.FinalChapter, g.Spoiler, g.Rating, bookDto)).ToList()
+            entity.Reviews.Select(g => new ReviewDto(g.Id, g.Content, g.InitialChapter, g.FinalChapter, g.Spoiler, g.Rating, bookDto, g.UserId)).ToList()
         );
     }
 

@@ -1,4 +1,6 @@
 
+using DevMobile.ApiService.Dto.User;
+
 namespace DevMobile.ApiService.Dto.Review;
 
 public record CreateReviewDto(

@@ -4,6 +4,8 @@ using DevMobile.ApiService.Repositories.Interfaces;
 using DevMobile.ApiService.Dto.Review;
 using DevMobile.ApiService.Dto.Book;
 using DevMobile.ApiService.Dto.Genre;
+using DevMobile.ApiService.Dto.User;
+
 
 
 
@@ -13,19 +15,22 @@ public class ReviewService : IReviewService
 {
     private readonly IReviewRepository _reviewRepository;
     private readonly IBookRepository _bookRepository;
+    private readonly IUserRepository _userRepository;
 
 
-    public ReviewService(IReviewRepository reviewRepository, IBookRepository bookRepository)
+
+    public ReviewService(IReviewRepository reviewRepository, IBookRepository bookRepository, IUserRepository userRepository)
     {
         _reviewRepository = reviewRepository;
         _bookRepository = bookRepository;
+        _userRepository = userRepository;
     }
 
-    public async Task<IEnumerable<ReviewDto>> GetLatest(int limit)
+    public async Task<IEnumerable<ReviewWithUserDto>> GetLatest(int limit)
     {
         var reviews = await _reviewRepository.GetLatest(limit);
 
-        return reviews.Select(x => new ReviewDto(
+        return reviews.Select(x => new ReviewWithUserDto(
             x.Id, x.Content, x.InitialChapter, x.FinalChapter, x.Spoiler, x.Rating, 
             new BookDto(
                 x.Book.Id, 
@@ -35,13 +40,18 @@ public class ReviewService : IReviewService
                 x.Book.CoverImageUrl ,
                 x.Book.Chapters, 
                 x.Book.Summary, 
-                x.Book.Genres.Select(g => new GenreDto(g.Id, g.Name)).ToList())
+                x.Book.Genres.Select(g => new GenreDto(g.Id, g.Name)).ToList()),
+            new UserDto(
+                x.User.Id, 
+                x.User.Name, 
+                x.User.Email
+            )
         ));
     }
 
-    public async Task<ReviewDto> GetById(int id)
+    public async Task<ReviewWithUserDto> GetById(int id)
     {
-        var entity = await _reviewRepository.GetWithIncludes(id, r => r.Book);
+        var entity = await _reviewRepository.GetWithIncludes(id, r => r.Book, r => r.User);
 
         if (entity == null)
             return null;
@@ -51,7 +61,7 @@ public class ReviewService : IReviewService
         if (book == null)
             return null;
 
-        return new ReviewDto(
+        return new ReviewWithUserDto(
             entity.Id, entity.Content, entity.InitialChapter, entity.FinalChapter, entity.Spoiler, entity.Rating, 
             new BookDto(
                 book.Id, 
@@ -61,11 +71,16 @@ public class ReviewService : IReviewService
                 book.CoverImageUrl ,
                 book.Chapters, 
                 book.Summary, 
-                book.Genres.Select(g => new GenreDto(g.Id, g.Name)).ToList())
+                book.Genres.Select(g => new GenreDto(g.Id, g.Name)).ToList()),
+            new UserDto(
+                entity.User.Id,
+                entity.User.Name,
+                entity.User.Email
+            )
         );
     }
 
-    public async Task<ReviewDto> Create(CreateReviewDto dto)
+    public async Task<ReviewWithUserDto> Create(CreateReviewDto dto, int userId)
     {
         var Review = new Review
         {
@@ -74,14 +89,16 @@ public class ReviewService : IReviewService
             FinalChapter = dto.FinalChapter,
             Spoiler = dto.Spoiler,
             Rating = dto.Rating,
-            BookId = dto.BookId
+            BookId = dto.BookId,
+            UserId = userId
         };
 
         await _reviewRepository.Add(Review);
 
         var book = await _bookRepository.GetWithIncludes(dto.BookId, b => b.Genres);
+        var user = await _userRepository.Get(userId);
 
-        return new ReviewDto(
+        return new ReviewWithUserDto(
             Review.Id,
             Review.Content,
             Review.InitialChapter,
@@ -97,6 +114,11 @@ public class ReviewService : IReviewService
                 book.Chapters, 
                 book.Summary, 
                 book.Genres.Select(g => new GenreDto(g.Id, g.Name)).ToList()
+            ),
+            new UserDto(
+                user.Id,
+                user.Name,
+                user.Email
             )
         );
     }

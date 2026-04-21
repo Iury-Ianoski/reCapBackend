@@ -3,6 +3,8 @@ using DevMobile.ApiService.Entities;
 using DevMobile.ApiService.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+
 
 namespace DevMobile.ApiService.Controllers
 {
@@ -41,7 +43,7 @@ namespace DevMobile.ApiService.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ReviewDto>> GetById(int id)
+        public async Task<ActionResult<ReviewWithUserDto>> GetById(int id)
         {
             var Review = await _reviewService.GetById(id);
             if (Review == null) return NotFound();
@@ -51,35 +53,46 @@ namespace DevMobile.ApiService.Controllers
 
         // POST /Reviews
         /// <summary>
-        /// Adiciona review a base de dados (Somente moderadores)
+        /// Adiciona review a base de dados
         /// </summary>
         /// <returns>Review criada no banco.</returns>
-        [Authorize(Roles = "Moderator")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task <ActionResult<ReviewDto>> Create(CreateReviewDto newReview)
+        public async Task <ActionResult<ReviewWithUserDto>> Create(CreateReviewDto newReview)
         {
-            var ReviewDto = await _reviewService.Create(newReview);
+
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            // ou, dependendo de como você montou o token:
+            // var userId = User.FindFirst("sub")?.Value;
+
+            var reviewDto = await _reviewService.Create(newReview, userId);
 
             return CreatedAtAction(
                 nameof(GetById),
-                new { id = ReviewDto.Id },
-                ReviewDto
+                new { id = reviewDto.Id },
+                reviewDto
             );
         }
 
         // PUT /Reviews/{id}
         /// <summary>
-        /// Edita review na base de dados (Somente moderadores)
+        /// Edita review na base de dados
         /// </summary>
-        [Authorize(Roles = "Moderator")]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Update(int id, UpdateReviewDto updatedReview)
         {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            var review = await _reviewService.GetById(id);
+
+            if(review.User.Id != userId)
+                return Unauthorized();
+
             var updated = await _reviewService.Update(id, updatedReview);
 
             if (updated == false)
@@ -90,14 +103,21 @@ namespace DevMobile.ApiService.Controllers
 
         // DELETE /Reviews/{id}
         /// <summary>
-        /// Deleta review na base de dados (Somente moderadores)
+        /// Deleta review na base de dados
         /// </summary>
-        [Authorize(Roles = "Moderator")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Delete(int id)
         {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            var review = await _reviewService.GetById(id);
+
+            if(review.User.Id != userId)
+                return Unauthorized();
+
             var deleted = await _reviewService.Delete(id);
             if (deleted == false)
                 return NotFound();

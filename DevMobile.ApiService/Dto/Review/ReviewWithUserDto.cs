@@ -4,7 +4,7 @@ using DevMobile.ApiService.Dto.User;
 
 namespace DevMobile.ApiService.Dto.Review;
 
-public record ReviewDto(
+public record ReviewWithUserDto(
     int Id,
     string Content,
     int InitialChapter,
@@ -12,5 +12,5 @@ public record ReviewDto(
     bool Spoiler,
     int Rating,
     BookDto Book,
-    int UserId
+    UserDto User
 );

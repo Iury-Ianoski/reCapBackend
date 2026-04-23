@@ -34,6 +34,34 @@ namespace DevMobile.ApiService.Controllers
             return Ok(ReviewsDto);
         }
 
+        // GET /Reviews/bookId
+        /// <summary>
+        /// Retorna as reviews de um livro.
+        /// </summary>
+        /// <param name="bookId">Id do livro</param>
+        /// <returns>Lista de reviews</returns>
+        [HttpGet("bookId/{bookID}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<ReviewDto>>> GetByBookId(int bookId)
+        {
+            var ReviewsDto = await _reviewService.GetReviewsByBookId(bookId);
+            return Ok(ReviewsDto);
+        }
+
+        // GET /Reviews/userId
+        /// <summary>
+        /// Retorna as reviews de um usuário.
+        /// </summary>
+        /// <param name="userId">Id do usuário</param>
+        /// <returns>Lista de reviews</returns>
+        [HttpGet("userId/{userId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<ReviewDto>>> GetByUserId(int userId)
+        {
+            var ReviewsDto = await _reviewService.GetReviewsByUserId(userId);
+            return Ok(ReviewsDto);
+        }
+
         // GET /Reviews/{id}
         /// <summary>
         /// Busca review por ID
@@ -43,7 +71,7 @@ namespace DevMobile.ApiService.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ReviewWithUserDto>> GetById(int id)
+        public async Task<ActionResult<ReviewDto>> GetById(int id)
         {
             var Review = await _reviewService.GetById(id);
             if (Review == null) return NotFound();
@@ -60,7 +88,7 @@ namespace DevMobile.ApiService.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task <ActionResult<ReviewWithUserDto>> Create(CreateReviewDto newReview)
+        public async Task <ActionResult<ReviewDto>> Create(CreateReviewDto newReview)
         {
 
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
@@ -90,7 +118,7 @@ namespace DevMobile.ApiService.Controllers
 
             var review = await _reviewService.GetById(id);
 
-            if(review.User.Id != userId)
+            if(review.UserId != userId)
                 return Unauthorized();
 
             var updated = await _reviewService.Update(id, updatedReview);
@@ -115,7 +143,7 @@ namespace DevMobile.ApiService.Controllers
 
             var review = await _reviewService.GetById(id);
 
-            if(review.User.Id != userId)
+            if(review.UserId != userId)
                 return Unauthorized();
 
             var deleted = await _reviewService.Delete(id);

@@ -36,14 +36,14 @@ public class BookService : IBookService
     }
     
 
-    public async Task<BookWithReviewsDto> GetById(int id)
+    public async Task<BookDto> GetById(int id)
     {
-        var entity = await _bookRepository.GetWithIncludes(id, b => b.Genres, b => b.Reviews);
+        var entity = await _bookRepository.GetWithIncludes(id, b => b.Genres);
 
         if (entity == null)
             return null;
 
-        var bookDto = new BookDto(
+        return new BookDto(
             entity.Id,
             entity.Title,
             entity.Author,
@@ -52,18 +52,6 @@ public class BookService : IBookService
             entity.Chapters,
             entity.Summary,
             entity.Genres.Select(g => new GenreDto(g.Id, g.Name)).ToList()
-        );
-
-        return new BookWithReviewsDto(
-            entity.Id,
-            entity.Title,
-            entity.Author,
-            entity.PublicationYear,
-            entity.CoverImageUrl,
-            entity.Chapters,
-            entity.Summary,
-            entity.Genres.Select(g => new GenreDto(g.Id, g.Name)).ToList(),
-            entity.Reviews.Select(g => new ReviewDto(g.Id, g.Content, g.InitialChapter, g.FinalChapter, g.Spoiler, g.Rating, bookDto, g.UserId)).ToList()
         );
     }
 

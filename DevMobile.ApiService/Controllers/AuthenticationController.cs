@@ -1,3 +1,4 @@
+using DevMobile.ApiService.Dto.User;
 using DevMobile.ApiService.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -9,12 +10,12 @@ namespace DevMobile.ApiService.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly ITokenService _tokenService;
-        private readonly IUserService _userService;
+        private readonly IAuthService _authService;
 
-        public AuthenticationController(ITokenService tokenService, IUserService userService)
+        public AuthenticationController(ITokenService tokenService, IAuthService authService)
         {
             _tokenService = tokenService;
-            _userService = userService;
+            _authService = authService;
 
         }
         
@@ -36,7 +37,7 @@ namespace DevMobile.ApiService.Controllers
             return Ok(new {BearerToken = token});
         }
 
-        // POST /auth/register
+        // POST /register
         /// <summary>
         /// Registre-se. Adiciona novo usuário à base de dados.
         /// </summary>
@@ -46,9 +47,25 @@ namespace DevMobile.ApiService.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> Register(RegisterDto registerDto)
         {
-            await _userService.Register(registerDto);
+            await _authService.Register(registerDto);
             return Created("", new { message = "Usuário criado com sucesso" });
         }
 
+        // GET /me
+        /// <summary>
+        /// captura o usuário logado
+        /// </summary>
+        /// <returns>usuário</returns>
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<ActionResult<UserDto>> GetMe()
+        {
+            var userDto = await _authService.GetUserFromToken(User);
+
+            if (userDto == null)
+                return Unauthorized();
+
+            return Ok(userDto);
+        }
     }
 }

@@ -14,6 +14,14 @@ namespace DevMobile.ApiService.Repositories
         {
             return await _context.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Email == userName);
         }
+
+        public async Task<List<User>> SearchByName(string namePart)
+        {
+            return await _context.Users
+                .Include(u => u.Roles)
+                .Where(u => u.Name.ToLower().Contains(namePart.ToLower()) || u.Email.ToLower().Contains(namePart.ToLower()))
+                .ToListAsync();
+        }
     }
         
 }

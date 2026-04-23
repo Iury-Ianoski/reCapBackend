@@ -1,48 +1,45 @@
-using DevMobile.ApiService.Entities;
 using DevMobile.ApiService.Services.Interfaces;
 using DevMobile.ApiService.Repositories.Interfaces;
+using DevMobile.ApiService.Dto.User;
+
 
 
 namespace DevMobile.ApiService.Services;
 
 public class UserService : IUserService
 {
-    private readonly IConfiguration _configuration;
     private readonly IUserRepository _userRepository;
-    private readonly IRoleRepository _roleRepository;
+    private readonly IReviewRepository _reviewRepository;
 
-    private readonly IPasswordService _passwordService;
 
-    public UserService(IConfiguration configuration, IUserRepository userRepository, IPasswordService passwordService, IRoleRepository roleRepository)
+    public UserService(IUserRepository userRepository, IReviewRepository reviewRepository)
     {
-        _configuration = configuration;
         _userRepository = userRepository;
-        _passwordService = passwordService;
-        _roleRepository = roleRepository;
+        _reviewRepository = reviewRepository;
     }
 
-    public async Task Register(RegisterDto registerDto)
+    public async Task<List<UserDto>> SearchByNamePart(string namePart)
     {
-        var alreadyExists = await _userRepository.GetByUserName(registerDto.Email);
-        if (alreadyExists != null)
-            return;
+        var users = await _userRepository.SearchByName(namePart);
 
-        var user = new User
-        {
-            Name = registerDto.Name,
-            Email = registerDto.Email,
-            Roles = new List<Role>()
-        };
+        return users.Select(b => new UserDto(
+            b.Id,
+            b.Name,
+            b.Email
+        )).ToList();
+    }
+    
+    public async Task<UserDto> GetById(int id)
+    {
+        var entity = await _userRepository.Get(id);
 
-        user.Password = await _passwordService.HashPassword(user, registerDto.Password);
+        if (entity == null)
+            return null;
 
-
-        user.CreatedAt = DateTime.UtcNow;
-
-        var initialRole = await _roleRepository.GetByRoleName("Reader");
-
-        user.Roles.Add(initialRole);
-
-        await _userRepository.Add(user);
+        return new UserDto(
+            entity.Id,
+            entity.Name,
+            entity.Email
+        );
     }
 }

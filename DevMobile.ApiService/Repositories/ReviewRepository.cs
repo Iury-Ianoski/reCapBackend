@@ -21,6 +21,28 @@ namespace DevMobile.ApiService.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<Review>> GetByUserId(int userId)
+        {
+            return await _context.Reviews
+                .Include(r => r.Book)
+                    .ThenInclude(b => b.Genres)
+                .Include(r => r.User)
+                .Where(r => r.UserId == userId)
+                .OrderByDescending(r => r.Id)
+                .ToListAsync();
+        }
+
+        public async Task<List<Review>> GetByBookId(int bookId)
+        {
+            return await _context.Reviews
+                .Include(r => r.Book)
+                    .ThenInclude(b => b.Genres)
+                .Include(r => r.User)
+                .Where(r => r.BookId == bookId)
+                .OrderByDescending(r => r.Id)
+                .ToListAsync();
+        }
+
     }
         
 }

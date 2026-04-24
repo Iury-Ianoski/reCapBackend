@@ -3,6 +3,7 @@ using DevMobile.ApiService.Services.Interfaces;
 using DevMobile.ApiService.Repositories.Interfaces;
 using DevMobile.ApiService.Dto.User;
 using System.Security.Claims;
+using DevMobile.ApiService.Dto.Genre;
 
 
 namespace DevMobile.ApiService.Services;
@@ -46,18 +47,19 @@ public class AuthService : IAuthService
         await _userRepository.Add(user);
     }
 
-    public async Task<UserDto> GetUserFromToken(ClaimsPrincipal userClaims)
+    public async Task<UserWithRoleDto> GetUserFromToken(ClaimsPrincipal userClaims)
     {
         var userId = int.Parse(userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-        var user = await _userRepository.Get(userId);
+        var user = await _userRepository.GetWithIncludes(userId, u => u.Roles);
 
         if (user == null) return null;
 
-        return new UserDto(
+        return new UserWithRoleDto(
             user.Id,
             user.Name,
-            user.Email
+            user.Email,
+            user.Roles.Select(r => new RoleDto( r.Id, r.Name)).ToList()
         );
     }
 }

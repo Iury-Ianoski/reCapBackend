@@ -58,7 +58,7 @@ namespace DevMobile.ApiService.Controllers
         /// <returns>usuário</returns>
         [Authorize]
         [HttpGet("me")]
-        public async Task<ActionResult<UserDto>> GetMe()
+        public async Task<ActionResult<UserWithRoleDto>> GetMe()
         {
             var userDto = await _authService.GetUserFromToken(User);
 

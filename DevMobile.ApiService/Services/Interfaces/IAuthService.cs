@@ -8,5 +8,5 @@ namespace DevMobile.ApiService.Services.Interfaces;
 public interface IAuthService
 {
     Task Register(RegisterDto registerDto);
-    Task<UserDto> GetUserFromToken(ClaimsPrincipal userClaims);
+    Task<UserWithRoleDto> GetUserFromToken(ClaimsPrincipal userClaims);
 }

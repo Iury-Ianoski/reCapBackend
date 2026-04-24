@@ -26,12 +26,17 @@ public class ReviewService : IReviewService
         _userRepository = userRepository;
     }
 
-    public async Task<IEnumerable<ReviewDto>> GetLatest(int limit)
+    public async Task<IEnumerable<ReviewWithUserDto>> GetLatest(int limit)
     {
         var reviews = await _reviewRepository.GetLatest(limit);
 
-        return reviews.Select(x => new ReviewDto(
-            x.Id, x.Content, x.InitialChapter, x.FinalChapter, x.Spoiler, x.Rating, x.UserId,
+        return reviews.Select(x => new ReviewWithUserDto(
+            x.Id, x.Content, x.InitialChapter, x.FinalChapter, x.Spoiler, x.Rating,
+            new UserDto(
+                x.User.Id,
+                x.User.Name,
+                x.User.Email
+            ),
             new BookDto(
                 x.Book.Id, 
                 x.Book.Title, 
@@ -44,67 +49,68 @@ public class ReviewService : IReviewService
         ));
     }
 
-    public async Task<List<ReviewDto>> GetReviewsByUserId(int userId)
+    public async Task<IEnumerable<ReviewWithUserDto>> GetReviewsByUserId(int userId)
     {
         var reviews = await _reviewRepository.GetByUserId(userId);
 
-        return reviews.Select(b => new ReviewDto(
-            b.Id,
-            b.Content,
-            b.InitialChapter,
-            b.FinalChapter,
-            b.Spoiler,
-            b.Rating,
-            b.UserId,
+        return reviews.Select(x => new ReviewWithUserDto(
+            x.Id, x.Content, x.InitialChapter, x.FinalChapter, x.Spoiler, x.Rating,
+            new UserDto(
+                x.User.Id,
+                x.User.Name,
+                x.User.Email
+            ),
             new BookDto(
-                b.Book.Id,
-                b.Book.Title,
-                b.Book.Author,
-                b.Book.PublicationYear,
-                b.Book.CoverImageUrl,
-                b.Book.Chapters,
-                b.Book.Summary,
-                b.Book.Genres.Select(g => new GenreDto(g.Id, g.Name)).ToList()
-            )
-        )).ToList();
+                x.Book.Id, 
+                x.Book.Title, 
+                x.Book.Author, 
+                x.Book.PublicationYear, 
+                x.Book.CoverImageUrl ,
+                x.Book.Chapters, 
+                x.Book.Summary, 
+                x.Book.Genres.Select(g => new GenreDto(g.Id, g.Name)).ToList())
+        ));
     }
 
-    public async Task<List<ReviewDto>> GetReviewsByBookId(int bookId)
+    public async Task<IEnumerable<ReviewWithUserDto>> GetReviewsByBookId(int bookId)
     {
         var reviews = await _reviewRepository.GetByBookId(bookId);
 
-        return reviews.Select(b => new ReviewDto(
-            b.Id,
-            b.Content,
-            b.InitialChapter,
-            b.FinalChapter,
-            b.Spoiler,
-            b.Rating,
-            b.UserId,
+        return reviews.Select(x => new ReviewWithUserDto(
+            x.Id, x.Content, x.InitialChapter, x.FinalChapter, x.Spoiler, x.Rating,
+            new UserDto(
+                x.User.Id,
+                x.User.Name,
+                x.User.Email
+            ),
             new BookDto(
-                b.Book.Id,
-                b.Book.Title,
-                b.Book.Author,
-                b.Book.PublicationYear,
-                b.Book.CoverImageUrl,
-                b.Book.Chapters,
-                b.Book.Summary,
-                b.Book.Genres.Select(g => new GenreDto(g.Id, g.Name)).ToList()
-            ))
-        ).ToList();
+                x.Book.Id, 
+                x.Book.Title, 
+                x.Book.Author, 
+                x.Book.PublicationYear, 
+                x.Book.CoverImageUrl ,
+                x.Book.Chapters, 
+                x.Book.Summary, 
+                x.Book.Genres.Select(g => new GenreDto(g.Id, g.Name)).ToList())
+        ));
     }
 
     
 
-    public async Task<ReviewDto> GetById(int id)
+    public async Task<ReviewWithUserDto> GetById(int id)
     {
         var entity = await _reviewRepository.GetWithIncludes(id, r => r.Book, r => r.User);
 
         if (entity == null)
             return null;
 
-        return new ReviewDto(
-            entity.Id, entity.Content, entity.InitialChapter, entity.FinalChapter, entity.Spoiler, entity.Rating, entity.UserId,
+        return new ReviewWithUserDto(
+            entity.Id, entity.Content, entity.InitialChapter, entity.FinalChapter, entity.Spoiler, entity.Rating, 
+            new UserDto(
+                entity.User.Id,
+                entity.User.Name,
+                entity.User.Email
+            ),
             new BookDto(
                 entity.Book.Id, 
                 entity.Book.Title, 

@@ -28,7 +28,7 @@ namespace DevMobile.ApiService.Controllers
         /// <returns>Lista de reviews</returns>
         [HttpGet("latest/{limit}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<ReviewDto>>> GetLatest(int limit)
+        public async Task<ActionResult<IEnumerable<ReviewWithUserDto>>> GetLatest(int limit)
         {
             var ReviewsDto = await _reviewService.GetLatest(limit);
             return Ok(ReviewsDto);
@@ -40,9 +40,9 @@ namespace DevMobile.ApiService.Controllers
         /// </summary>
         /// <param name="bookId">Id do livro</param>
         /// <returns>Lista de reviews</returns>
-        [HttpGet("bookId/{bookID}")]
+        [HttpGet("bookId/{bookId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<ReviewDto>>> GetByBookId(int bookId)
+        public async Task<ActionResult<IEnumerable<ReviewWithUserDto>>> GetByBookId(int bookId)
         {
             var ReviewsDto = await _reviewService.GetReviewsByBookId(bookId);
             return Ok(ReviewsDto);
@@ -56,7 +56,7 @@ namespace DevMobile.ApiService.Controllers
         /// <returns>Lista de reviews</returns>
         [HttpGet("userId/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<ReviewDto>>> GetByUserId(int userId)
+        public async Task<ActionResult<IEnumerable<ReviewWithUserDto>>> GetByUserId(int userId)
         {
             var ReviewsDto = await _reviewService.GetReviewsByUserId(userId);
             return Ok(ReviewsDto);
@@ -71,7 +71,7 @@ namespace DevMobile.ApiService.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ReviewDto>> GetById(int id)
+        public async Task<ActionResult<ReviewWithUserDto>> GetById(int id)
         {
             var Review = await _reviewService.GetById(id);
             if (Review == null) return NotFound();
@@ -118,7 +118,7 @@ namespace DevMobile.ApiService.Controllers
 
             var review = await _reviewService.GetById(id);
 
-            if(review.UserId != userId)
+            if(review.User.Id != userId)
                 return Unauthorized();
 
             var updated = await _reviewService.Update(id, updatedReview);
@@ -143,7 +143,7 @@ namespace DevMobile.ApiService.Controllers
 
             var review = await _reviewService.GetById(id);
 
-            if(review.UserId != userId)
+            if(review.User.Id != userId)
                 return Unauthorized();
 
             var deleted = await _reviewService.Delete(id);

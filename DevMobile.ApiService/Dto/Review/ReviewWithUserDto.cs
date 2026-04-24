@@ -11,6 +11,6 @@ public record ReviewWithUserDto(
     int? FinalChapter,
     bool Spoiler,
     int Rating,
-    BookDto Book,
-    UserDto User
+    UserDto User,
+    BookDto Book
 );
